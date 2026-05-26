@@ -49,7 +49,7 @@ export default async function HomePage() {
           <div className="flex flex-col items-center text-center">
             <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700">
               <Star className="h-4 w-4 text-blue-600" />
-              <span>India's smartest college discovery platform</span>
+              <span>India&apos;s  smartest college discovery platform</span>
             </div>
 
             <h1 className="mt-6 text-5xl font-extrabold text-gray-900 md:text-6xl">

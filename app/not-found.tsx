@@ -12,7 +12,7 @@ export default function NotFound() {
           Page not found
         </h1>
         <p className="mt-3 text-gray-500">
-          The page you're looking for doesn't exist.
+            The page you&apos;re looking for doesn&apos;t exist.
         </p>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">

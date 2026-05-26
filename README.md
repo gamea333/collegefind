@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # CollegeFind
 
 Indian college discovery platform built with Next.js 14, Prisma, PostgreSQL, NextAuth, Zustand, and React Query.
@@ -65,3 +66,7 @@ Open [http://localhost:3000](http://localhost:3000).
 - `npm run db:seed` — seed colleges
 - `npm run db:studio` — Prisma Studio
 - `npm run build` — production build
+=======
+# collegefind
+AI Software Engineer Internship Task Frontend
+>>>>>>> d08d794536972fcf4cc813545ff24ca6d2730959

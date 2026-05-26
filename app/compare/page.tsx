@@ -8,6 +8,7 @@ import { useSearchParams } from "next/navigation";
 import { CompareTable } from "@/components/compare/CompareTable";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useCompare } from "@/hooks/useCompare";
+import { toCollegeCard } from "@/lib/college-card";
 import type { College } from "@/types/college";
 
 interface CompareApiResponse {
@@ -87,7 +88,7 @@ export default function ComparePage() {
       if (hydratedIds.length === 0) return;
       try {
         const colleges = await fetchCompareColleges(hydratedIds);
-        colleges.forEach((college) => addToCompare(college));
+        colleges.forEach((college) => addToCompare(toCollegeCard(college)));
       } catch {
         // Ignore hydration errors (e.g., invalid ids) to avoid breaking page render.
       }

@@ -14,7 +14,7 @@ import { ActiveFilterChips } from "@/components/college/ActiveFilterChips";
 import { RecentlyViewed } from "@/components/college/RecentlyViewed";
 
 export default function CollegesPage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const { filters, setFilter, activeFilterCount, isFiltering } = useFilters();
   const {
     colleges,

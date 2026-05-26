@@ -14,7 +14,7 @@ export default function PredictorLoading() {
           <div className="rounded-2xl bg-white p-7 shadow-sm">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               {Array.from({ length: 2 }).map((_, index) => (
-                <div key={index} className="space-y-3">
+                <div key={`predictor-field-${index}`} className="space-y-3">
                   <Skeleton className="h-4 w-32 rounded" />
                   <Skeleton className="h-10 w-full rounded-lg" />
                 </div>

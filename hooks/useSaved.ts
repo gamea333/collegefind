@@ -1,9 +1,15 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type QueryClient,
+} from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useCallback, useMemo } from "react";
-import type { CollegeCard, SavedCollege } from "@/types/college";
+import { toCollegeCard } from "@/lib/college-card";
+import type { College, CollegeCard, PaginatedColleges, SavedCollege } from "@/types/college";
 
 interface SavedApiResponse {
   saved: SavedCollegeWithCollege[];
@@ -11,6 +17,50 @@ interface SavedApiResponse {
 
 interface SavedCollegeWithCollege extends SavedCollege {
   college: CollegeCard;
+}
+
+function createPlaceholderCollegeCard(collegeId: string): CollegeCard {
+  return {
+    id: collegeId,
+    name: "Saved college",
+    city: "",
+    state: "",
+    fees: 0,
+    rating: 0,
+    avgPackage: 0,
+    type: "",
+    image: null,
+    established: 0,
+  };
+}
+
+function findCollegeCardInCache(
+  queryClient: QueryClient,
+  collegeId: string
+): CollegeCard | undefined {
+  const collegeQueries = queryClient.getQueriesData<PaginatedColleges>({
+    queryKey: ["colleges"],
+  });
+
+  for (const [, data] of collegeQueries) {
+    const match = data?.colleges.find((college) => college.id === collegeId);
+    if (match) {
+      return match;
+    }
+  }
+
+  const compareQueries = queryClient.getQueriesData<College[]>({
+    queryKey: ["compare"],
+  });
+
+  for (const [, data] of compareQueries) {
+    const match = data?.find((college) => college.id === collegeId);
+    if (match) {
+      return toCollegeCard(match);
+    }
+  }
+
+  return undefined;
 }
 
 async function fetchSaved(): Promise<SavedCollegeWithCollege[]> {
@@ -48,7 +98,12 @@ export function useSaved(): UseSavedReturn {
     [savedList]
   );
 
-  const saveMutation = useMutation({
+  const saveMutation = useMutation<
+    { saved: SavedCollegeWithCollege },
+    Error,
+    string,
+    { previous: SavedCollegeWithCollege[] | undefined }
+  >({
     mutationFn: async (collegeId: string) => {
       const response = await fetch("/api/saved", {
         method: "POST",
@@ -69,18 +124,23 @@ export function useSaved(): UseSavedReturn {
         "saved",
       ]);
 
+      const cachedCollege =
+        findCollegeCardInCache(queryClient, collegeId) ??
+        createPlaceholderCollegeCard(collegeId);
+
       queryClient.setQueryData<SavedCollegeWithCollege[]>(["saved"], (old) => {
         const list = old ?? [];
         if (list.some((item) => item.collegeId === collegeId)) {
           return list;
         }
         return [
-          ...list,
           {
             id: `optimistic-${collegeId}`,
             userId: session?.user?.id ?? "",
             collegeId,
+            college: cachedCollege,
           },
+          ...list,
         ];
       });
 
@@ -96,7 +156,12 @@ export function useSaved(): UseSavedReturn {
     },
   });
 
-  const unsaveMutation = useMutation({
+  const unsaveMutation = useMutation<
+    void,
+    Error,
+    string,
+    { previous: SavedCollegeWithCollege[] | undefined }
+  >({
     mutationFn: async (collegeId: string) => {
       const response = await fetch("/api/saved", {
         method: "DELETE",
